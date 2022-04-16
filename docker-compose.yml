@@ -1,0 +1,12 @@
+version: '3.8'
+services:
+    yttv-client-0:
+        build:
+            context: .
+        volumes:
+            -   ".yttv_config/sockets/yttv-client.0.audio:/tmp/sink.audio"
+    yttv-client-1:
+        build:
+            context: .
+        volumes:
+            -   ".yttv_config/sockets/yttv-client.1.audio:/tmp/sink.audio"

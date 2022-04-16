@@ -20,22 +20,23 @@ docker-compose up -d
 ```
 
 ## Todo
-### 0.1.X
+### 0.0.1
 - [X] Get YouTube TV Page
 - [X] Go to Settings
 - [X] Get TV Code
 - [X] Add script block
 - [X] Get multiple TV Code
 - [X] Persistence
-- [ ] Dockerize
-- [ ] Add automated XPI Download
-- [ ] Add Tests
+- [X] Dockerize
+- [X] Add automated XPI Download
+- [X] Add Tests
 - [ ] Add Docs
 - [ ] Add Versioning
 - [ ] Make python package
-### 0.2.X
+### 0.0.X
+- [ ] Enhance Tests
 - [ ] Enhance crawling template creation (Maybe use accesible_name) 
 - [ ] Enhance speed (check if site is fully rendered)
 - [ ] Enhance dockerfile (check if site is fully rendered)
-### 0.3.X
+### 0.1.X
 - [ ] Think about new options and add them

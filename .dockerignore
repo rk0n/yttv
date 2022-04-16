@@ -1,0 +1,8 @@
+.venv/
+.git/
+.idea/
+.pytest_cache
+*.log
+*.png
+__pycache__/
+.yttv_config/
