@@ -16,7 +16,13 @@ poetry run pytest
 ## docker
 ### docker-compose
 ```bash
+chmod +x fifo.sh
+./fifo.sh
 docker-compose up -d
+cat .yttv_config/sockets/yttv-client.0.audio
+cat .yttv_config/sockets/yttv-client.1.audio
+Connect to YtTV using the YouTube App on Android/iOS -> Connect using TV Code
+Get TV Code from docker logs output
 ```
 
 ## Todo
