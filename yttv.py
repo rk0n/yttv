@@ -1,13 +1,20 @@
+import logging
+logging.getLogger().setLevel(logging.INFO)
+
 import os
+import time
+import urllib.request
 
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-
-import time
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
 
 USER_AGENT = 'Mozilla/5.0 (SMART-TV; Linux; Tizen 4.0.0.2) AppleWebkit/605.1.15 (KHTML, like Gecko) SamsungBrowser/9.2 TV Safari/605.1.15'
-SCRIPT_BLOCKER = 'uBlock0_1.42.4.firefox.signed.xpi'
+SCRIPT_BLOCKER_VERSION = '1.42.4'
+SCRIPT_BLOCKER = 'uBlock0_' + SCRIPT_BLOCKER_VERSION + '.firefox.signed.xpi'
+SCRIPT_BLOCKER_URL = 'https://github.com/gorhill/uBlock/releases/download/' + SCRIPT_BLOCKER_VERSION + '/' + SCRIPT_BLOCKER
+FIREFOX_BIN = r'/opt/firefox/firefox'
 
 
 class YTTV:
@@ -17,6 +24,7 @@ class YTTV:
         os.makedirs(PROFILE_DIRECTORY, exist_ok=True)
         # Configure Browser
         options = webdriver.FirefoxOptions()
+        options.binary = FirefoxBinary(FIREFOX_BIN)
         options.add_argument("--headless")
         profile = webdriver.FirefoxProfile(profile_directory=PROFILE_DIRECTORY)
         profile.set_preference("general.useragent.override", USER_AGENT)
@@ -24,6 +32,10 @@ class YTTV:
         self.driver = webdriver.Firefox(options=options,
                                         firefox_profile=profile)
         self.driver.delete_all_cookies()
+        self.install_no_script()
+
+    def install_no_script(self):
+        urllib.request.urlretrieve(SCRIPT_BLOCKER_URL, SCRIPT_BLOCKER)
         self.driver.install_addon(SCRIPT_BLOCKER, temporary=True)
 
     def stop_app(self):
@@ -32,51 +44,51 @@ class YTTV:
     def get_settings_tv_code(self) -> str:
         # Go to Settings
         button = self.driver.find_element(By.CLASS_NAME, 'ytlr-icon--gear')
-        print("Go to Settings")
+        logging.info("Go to Settings")
         button.click()
         for idx in range(5):
-            print(idx)
+            logging.info(str(idx))
             time.sleep(1)
-        print("Settings")
+        logging.info("Settings")
         # Go to Link with TV Code
         buttons = self.driver.find_elements(By.CLASS_NAME,
                                             'yt-virtual-list__item')
         for button in buttons:
             if button.text == 'Link with TV code':
-                print("Go to Link with TV Code")
+                logging.info("Go to Link with TV Code")
                 button.click()
                 for idx in range(5):
-                    print(idx)
+                    logging.info(str(idx))
                     time.sleep(1)
-                print("Link with Wi-Fi")
+                logging.info("Link with Wi-Fi")
         # Get TV Code
-        print("Get TV Code")
+        logging.info("Get TV Code")
         code = self.driver.find_element(By.CLASS_NAME,
                                         'ytlr-link-phone-with-tv-code-renderer__pairing-code-text')
-        print(code.text)
+        logging.info(code.text)
         return code.text.replace(' ', '')
 
     def load_app(self):
         # Loading
         self.driver.get('https://www.youtube.com/tv')
-        print("LOADING..")
+        logging.info("LOADING..")
         for i in range(5):
-            print(i)
+            logging.info(str(i))
             time.sleep(1)
 
     def reset_app(self):
-        print("RESET..")
+        logging.info("RESET..")
         running = True
         i = 0
         while running:
             webdriver.ActionChains(self.driver).send_keys(
                 Keys.ESCAPE).perform()
             for z in range(5):
-                print(z)
+                logging.info(str(z))
                 time.sleep(z)
             elements = self.driver.find_elements(By.TAG_NAME,
                                                  'ytlr-button-renderer')
-            print(i)
+            logging.info(i)
             i = + 1
             if len(elements) == 2:
                 for element in elements:
@@ -92,8 +104,9 @@ if __name__ == '__main__':
     try:
         yttv.load_app()
         tv_code = yttv.get_settings_tv_code()
-        time.sleep(60)
+        while True:
+            time.sleep(1)
     except Exception as e:
-        print(e)
+        logging.info(e)
         yttv.stop_app()
     yttv.stop_app()
